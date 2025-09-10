@@ -2,6 +2,7 @@ try:
     import pygame
 except ImportError:
     print("pygame-ce is missing")
+    exit()
 import math
 
 pygame.init()
