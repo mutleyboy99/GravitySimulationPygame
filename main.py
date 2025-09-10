@@ -1,4 +1,7 @@
-import pygame
+try: 
+    import pygame
+except ImportError:
+    print("pygame-ce is missing")
 import math
 
 pygame.init()
