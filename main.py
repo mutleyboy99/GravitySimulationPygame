@@ -16,6 +16,7 @@ objects = []
 points = []
 MAXPOINTS = 1000
 stepsize = 100
+offset = pygame.Vector2(0, 0)
 
 GRAVITY = 0.000667
 
@@ -27,7 +28,7 @@ def draw_circle_alpha(surface, colour, center, radius):
     pygame.draw.circle(shape_surf, colour, (radius, radius), radius)
     surface.blit(shape_surf, target_rect)
 
-class Object:
+class PhysicsObject:
     def __init__(self, position, mass, density, velocity, colour, gravity = True):
         self.velocity = velocity 
         self.colour = colour
@@ -39,7 +40,7 @@ class Object:
         objects.append(self)
 
     def draw(self):
-        pygame.draw.circle(screen, self.colour, self.position, self.radius)
+        pygame.draw.circle(screen, self.colour, self.position + offset, self.radius)
         #pygame.draw.line(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
 
     def move(self, step_size):
@@ -68,9 +69,9 @@ class Object:
 
 
 if __name__ == "__main__":
-    Object(center, 1000000, 1000, pygame.Vector2(0,0), (255, 0, 0), False)
-    Object(center+pygame.Vector2(640, 0), 10, 0.5, pygame.Vector2(0,0.2), (255, 255, 255))
-    Object(center+pygame.Vector2(600, 0), 15000, 50, pygame.Vector2(0,0.5), (255, 255, 0))
+    PhysicsObject(center, 1000000, 1000, pygame.Vector2(0, 0), (255, 0, 0), False)
+    PhysicsObject(center+pygame.Vector2(535, 0), 10, 0.5, pygame.Vector2(0,0.3), (255, 255, 255))
+    PhysicsObject(center+pygame.Vector2(500, 0), 15000, 50, pygame.Vector2(0,0.6), (255, 255, 0))
     
 
     keys = pygame.key.get_pressed()
@@ -84,6 +85,16 @@ if __name__ == "__main__":
             stepsize -= 10
         if keys[pygame.K_EQUALS] and not prev_keys[pygame.K_EQUALS]:
             stepsize += 10
+        if keys[pygame.K_UP]:
+            offset += pygame.Vector2(0, 10)
+        if keys[pygame.K_DOWN]:
+            offset -= pygame.Vector2(0, 10)
+        if keys[pygame.K_LEFT]:
+            offset += pygame.Vector2(10, 0)
+        if keys[pygame.K_RIGHT]:
+            offset -= pygame.Vector2(10, 0)
+
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -91,12 +102,13 @@ if __name__ == "__main__":
 
         screen.fill("black")
 
-        for item in objects:
-            item.move(stepsize)
         for point in points:
             radius = float(10 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
             opacity = int(255 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
-            draw_circle_alpha(screen, (point[1][0], point[1][1], point[1][2], opacity), point[0], 2)
+            draw_circle_alpha(screen, (point[1][0], point[1][1], point[1][2], opacity), point[0] + offset, 2)
+        for item in objects:
+            item.move(stepsize)
+
 
         pygame.display.flip()
 
