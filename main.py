@@ -17,6 +17,7 @@ points = []
 MAXPOINTS = 1000
 stepsize = 100
 offset = pygame.Vector2(0, 0)
+previous_stepsize = 0
 
 GRAVITY = 0.000667
 
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     while running:
         prev_keys = keys
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_ESCAPE]:
+        if keys[pygame.K_ESCAPE] and not prev_keys[pygame.K_ESCAPE]:
             running = False
         if keys[pygame.K_MINUS] and not prev_keys[pygame.K_MINUS]:
             stepsize -= 10
@@ -93,8 +94,14 @@ if __name__ == "__main__":
             offset += pygame.Vector2(10, 0)
         if keys[pygame.K_RIGHT]:
             offset -= pygame.Vector2(10, 0)
-        if keys[pygame.K_BACKSPACE]:
+        if keys[pygame.K_BACKSPACE] and not prev_keys[pygame.K_BACKSPACE]:
             offset = pygame.Vector2(0, 0)
+        if keys[pygame.K_SPACE] and not prev_keys[pygame.K_SPACE]:
+            if stepsize != 0:
+                previous_stepsize = stepsize
+                stepsize = 0
+            else:
+                stepsize = previous_stepsize
 
 
 
