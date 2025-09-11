@@ -4,6 +4,7 @@ except ImportError:
     print("pygame-ce is missing")
     exit()
 import math
+import copy
 
 pygame.init()
 screen = pygame.display.set_mode((1920, 1080))
@@ -12,6 +13,7 @@ running = True
 dt = 0
 
 objects = []
+points = []
 
 GRAVITY = 0.000667
 
@@ -30,9 +32,10 @@ class Object:
 
     def draw(self):
         pygame.draw.circle(screen, self.colour, self.position, self.radius)
-        #pygame.draw.line(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
+        pygame.draw.line(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
 
     def move(self, step_size):
+        points.append([copy.deepcopy(self.position), copy.deepcopy(self.colour)])
         self.draw()
         if self.gravity:
             for item in objects:
@@ -69,7 +72,9 @@ if __name__ == "__main__":
         screen.fill("black")
 
         for item in objects:
-            item.move(1)
+            item.move(5)
+        for point in points:
+            pygame.draw.circle(screen, point[1], point[0], 2)
 
         pygame.display.flip()
 
