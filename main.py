@@ -7,7 +7,7 @@ import math
 import copy
 
 pygame.init()
-screen = pygame.display.set_mode((1920, 1080))
+screen = pygame.display.set_mode((1920, 1080), pygame.SRCALPHA)
 clock = pygame.time.Clock()
 running = True
 dt = 0
@@ -20,6 +20,12 @@ stepsize = 100
 GRAVITY = 0.000667
 
 center = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+
+def draw_circle_alpha(surface, colour, center, radius):
+    target_rect = pygame.Rect(center, (0,0)).inflate((radius * 2, radius * 2))
+    shape_surf = pygame.Surface(target_rect.size, pygame.SRCALPHA)
+    pygame.draw.circle(shape_surf, colour, (radius, radius), radius)
+    surface.blit(shape_surf, target_rect)
 
 class Object:
     def __init__(self, position, mass, density, velocity, colour, gravity = True):
@@ -34,7 +40,7 @@ class Object:
 
     def draw(self):
         pygame.draw.circle(screen, self.colour, self.position, self.radius)
-        pygame.draw.line(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
+        #pygame.draw.line(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
 
     def move(self, step_size):
         if step_size != 0:
@@ -50,9 +56,9 @@ class Object:
                     if distance == 0:
                         continue
 
-                    gravity_acceleration = (GRAVITY * item.mass) / (distance ** 2)
+                    gravity_acceleration = (GRAVITY * item.mass * self.mass) / (distance ** 2)
 
-                    acceleration_vector = gravity_acceleration * (pos_difference / distance)
+                    acceleration_vector = gravity_acceleration * (pos_difference / distance) / self.mass
                     self.velocity += acceleration_vector * (step_size) * dt
 
             for item in objects:
@@ -62,9 +68,9 @@ class Object:
 
 
 if __name__ == "__main__":
-    Object(center, 1000000, 1000, pygame.Vector2(0,0), "red", False)
-    Object(center+pygame.Vector2(640, 0), 10, 0.5, pygame.Vector2(0,0.2), "white")
-    Object(center+pygame.Vector2(600, 0), 15000, 50, pygame.Vector2(0,0.5), "yellow")
+    Object(center, 1000000, 1000, pygame.Vector2(0,0), (255, 0, 0), False)
+    Object(center+pygame.Vector2(640, 0), 10, 0.5, pygame.Vector2(0,0.2), (255, 255, 255))
+    Object(center+pygame.Vector2(600, 0), 15000, 50, pygame.Vector2(0,0.5), (255, 255, 0))
     
 
     keys = pygame.key.get_pressed()
@@ -88,7 +94,9 @@ if __name__ == "__main__":
         for item in objects:
             item.move(stepsize)
         for point in points:
-            pygame.draw.circle(screen, point[1], point[0], 2)
+            radius = float(10 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
+            opacity = int(255 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
+            draw_circle_alpha(screen, (point[1][0], point[1][1], point[1][2], opacity), point[0], 2)
 
         pygame.display.flip()
 
