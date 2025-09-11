@@ -14,6 +14,8 @@ dt = 0
 
 objects = []
 points = []
+MAXPOINTS = 1000
+stepsize = 100
 
 GRAVITY = 0.000667
 
@@ -35,7 +37,10 @@ class Object:
         pygame.draw.line(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
 
     def move(self, step_size):
-        points.append([copy.deepcopy(self.position), copy.deepcopy(self.colour)])
+        if step_size != 0:
+            if len(points) >= MAXPOINTS:
+                points.pop(0)
+            points.append([copy.deepcopy(self.position), copy.deepcopy(self.colour)])
         self.draw()
         if self.gravity:
             for item in objects:
@@ -48,11 +53,13 @@ class Object:
                     gravity_acceleration = (GRAVITY * item.mass) / (distance ** 2)
 
                     acceleration_vector = gravity_acceleration * (pos_difference / distance)
-                    self.velocity += acceleration_vector * step_size * dt
+                    self.velocity += acceleration_vector * (step_size) * dt
 
+            for item in objects:
                 self.position += self.velocity * step_size * dt
         else:
             pass
+
 
 if __name__ == "__main__":
     Object(center, 1000000, 1000, pygame.Vector2(0,0), "red", False)
@@ -60,10 +67,17 @@ if __name__ == "__main__":
     Object(center+pygame.Vector2(600, 0), 15000, 50, pygame.Vector2(0,0.5), "yellow")
     
 
+    keys = pygame.key.get_pressed()
+
     while running:
+        prev_keys = keys
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
-            pygame.quit()
+            running = False
+        if keys[pygame.K_MINUS] and not prev_keys[pygame.K_MINUS]:
+            stepsize -= 10
+        if keys[pygame.K_EQUALS] and not prev_keys[pygame.K_EQUALS]:
+            stepsize += 10
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -72,12 +86,12 @@ if __name__ == "__main__":
         screen.fill("black")
 
         for item in objects:
-            item.move(5)
+            item.move(stepsize)
         for point in points:
             pygame.draw.circle(screen, point[1], point[0], 2)
 
         pygame.display.flip()
 
-        dt = clock.tick(60) / 10
+        dt = clock.tick(60) / 1000
 
     pygame.quit()
