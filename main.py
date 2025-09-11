@@ -93,6 +93,8 @@ if __name__ == "__main__":
             offset += pygame.Vector2(10, 0)
         if keys[pygame.K_RIGHT]:
             offset -= pygame.Vector2(10, 0)
+        if keys[pygame.K_BACKSPACE]:
+            offset = pygame.Vector2(0, 0)
 
 
 
