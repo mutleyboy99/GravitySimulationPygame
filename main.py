@@ -129,7 +129,7 @@ if __name__ == "__main__":
         # Draw trails behind objects
         for point in points:
             radius = float(point[2] / 1.5 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
-            opacity = int(255 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
+            opacity = float(255 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
             draw_circle_alpha(screen, (point[1][0], point[1][1], point[1][2], opacity), point[0] + offset, radius)
         # Move objects
         for item in objects:
