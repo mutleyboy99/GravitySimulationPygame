@@ -57,7 +57,7 @@ class PhysicsObject:
         if step_size != 0:
             if len(points) >= MAXPOINTS:
                 points.pop(0)
-            points.append([copy.deepcopy(self.position), copy.deepcopy(self.colour)])
+            points.append([copy.deepcopy(self.position), copy.deepcopy(self.colour), self.radius])
         self.draw()
         # Ability to make it so certain objects do not simulate their gravity or movement
         if self.gravity:
@@ -128,9 +128,9 @@ if __name__ == "__main__":
 
         # Draw trails behind objects
         for point in points:
-            radius = float(10 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
+            radius = float(point[2] / 1.5 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
             opacity = int(255 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
-            draw_circle_alpha(screen, (point[1][0], point[1][1], point[1][2], opacity), point[0] + offset, 2)
+            draw_circle_alpha(screen, (point[1][0], point[1][1], point[1][2], opacity), point[0] + offset, radius)
         # Move objects
         for item in objects:
             item.move(stepsize)
