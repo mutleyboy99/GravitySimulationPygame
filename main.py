@@ -5,6 +5,7 @@ except ImportError:
     exit()
 import math
 import copy
+import random
 
 # initiating pygame
 pygame.init()
@@ -41,6 +42,7 @@ class PhysicsObject:
         self.position = position
         self.mass = mass
         self.density = density #unit mass / unit length ^2
+        self.acceleration_vector = pygame.Vector2(0,0)
         self.radius = math.sqrt(mass / density)
         self.gravity = gravity
         objects.append(self)
@@ -49,7 +51,8 @@ class PhysicsObject:
         # Drawing the physics objects onto the screen
         pygame.draw.circle(screen, self.colour, self.position + offset, self.radius)
         # Velocity Visualisation for debug:
-        # pygame.draw.line(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
+        pygame.draw.aaline(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
+        #pygame.draw.aaline(screen, self.colour, self.position, self.position + self.acceleration_vector * 1000)
 
 
     # Calculates the gravity and the previous positions of objects for the trail
@@ -70,8 +73,8 @@ class PhysicsObject:
 
                     # Self.mass not truely necessary for accurate calculation
                     gravity_acceleration = (GRAVITY * item.mass * self.mass) / (distance ** 2)
-                    acceleration_vector = gravity_acceleration * (pos_difference / distance) / self.mass
-                    self.velocity += acceleration_vector * (step_size) * dt
+                    self.acceleration_vector = gravity_acceleration * (pos_difference / distance) / self.mass
+                    self.velocity += self.acceleration_vector * (step_size) * dt
 
             for item in objects:
                 self.position += self.velocity * step_size * dt
@@ -128,8 +131,8 @@ if __name__ == "__main__":
 
         # Draw trails behind objects
         for point in points:
-            radius = float(point[2] / 1.5 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
-            opacity = float(255 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
+            radius = float(random.uniform(0.9, 1) * point[2] / 1.5 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
+            opacity = float(random.uniform(0.9, 1) * 255 * (points.index(point) / (len(points) - 1))) if len(points) > 1 else 255
             draw_circle_alpha(screen, (point[1][0], point[1][1], point[1][2], opacity), point[0] + offset, radius)
         # Move objects
         for item in objects:
