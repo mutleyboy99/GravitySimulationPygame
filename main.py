@@ -51,7 +51,7 @@ class PhysicsObject:
         # Drawing the physics objects onto the screen
         pygame.draw.circle(screen, self.colour, self.position + offset, self.radius)
         # Velocity Visualisation for debug:
-        pygame.draw.aaline(screen, self.colour, self.position+self.velocity, self.position+self.velocity * 200)
+        pygame.draw.aaline(screen, self.colour, self.position + self.velocity + offset, (self.position+self.velocity * 200) + offset)
         #pygame.draw.aaline(screen, self.colour, self.position, self.position + self.acceleration_vector * 1000)
 
 
